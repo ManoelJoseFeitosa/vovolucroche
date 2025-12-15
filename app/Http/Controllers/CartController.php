@@ -31,9 +31,16 @@ class CartController extends Controller
         return view('site.cart', compact('cart', 'totalProductionDays', 'shippingOptions', 'zipcode'));
     }
 
-    public function addToCart(Request $request)
+    public function addToCart(Request $request, $id = null)
     {
-        $product = Product::findOrFail($request->product_id);
+        // Pega o ID ou do formulário (request) ou da URL ($id)
+        $productId = $request->product_id ?? $id;
+
+        if (!$productId) {
+             return redirect()->back()->with('error', 'Produto inválido.');
+        }
+
+        $product = Product::findOrFail($productId);
         $cart = session()->get('cart', []);
 
         if(isset($cart[$product->id])) {
@@ -44,13 +51,13 @@ class CartController extends Controller
                 "quantity" => 1,
                 "price" => $product->price,
                 "image" => $product->image_path,
-                "production_days" => $product->production_days, // Importante para o cálculo
+                "production_days" => $product->production_days,
                 "weight" => $product->weight
             ];
         }
 
         session()->put('cart', $cart);
-        return redirect()->back()->with('success', 'Produto adicionado ao carrinho!');
+        return redirect()->route('cart.index')->with('success', 'Produto adicionado ao carrinho!');
     }
 
     // NOVA FUNÇÃO: Atualizar Quantidade
