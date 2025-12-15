@@ -29,7 +29,7 @@ Route::get('/contato', [ShopController::class, 'contact'])->name('contact');
 // --- ROTAS DO CARRINHO DE COMPRAS ---
 Route::get('/carrinho', [CartController::class, 'index'])->name('cart.index');
 Route::get('/carrinho/adicionar/{id}', [CartController::class, 'add'])->name('cart.add');
-Route::delete('/carrinho/remover', [CartController::class, 'remove'])->name('cart.remove');
+Route::delete('/carrinho/remover', [CartController::class, 'removeFromCart'])->name('cart.remove');
 Route::patch('/carrinho/atualizar', [CartController::class, 'updateCart'])->name('cart.update');
 Route::get('/carrinho/frete', [CartController::class, 'calculateShipping'])->name('cart.shipping');
 
