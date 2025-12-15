@@ -30,6 +30,8 @@ Route::get('/contato', [ShopController::class, 'contact'])->name('contact');
 Route::get('/carrinho', [CartController::class, 'index'])->name('cart.index');
 Route::get('/carrinho/adicionar/{id}', [CartController::class, 'add'])->name('cart.add');
 Route::delete('/carrinho/remover', [CartController::class, 'remove'])->name('cart.remove');
+Route::patch('/carrinho/atualizar', [CartController::class, 'updateCart'])->name('cart.update');
+Route::get('/carrinho/frete', [CartController::class, 'calculateShipping'])->name('cart.shipping');
 
 // --- ROTAS DE CHECKOUT (FINALIZAÇÃO) ---
 Route::get('/finalizar-compra', [CheckoutController::class, 'index'])->name('checkout.index');

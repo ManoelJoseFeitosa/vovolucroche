@@ -4,61 +4,69 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Services\ShippingService;
 
 class CartController extends Controller
 {
-    /**
-     * Exibir o Carrinho de Compras
-     */
-    public function index()
+    public function index(Request $request)
     {
         $cart = session()->get('cart', []);
         
-        // Cálculos Totais
-        $totalPrice = 0;
+        // 1. Calcula o Total de Dias de Confecção (Soma de todos os itens)
         $totalProductionDays = 0;
-
         foreach($cart as $item) {
-            $totalPrice += $item['price'] * $item['quantity'];
-            // Somamos os dias de confecção de cada item (considerando produção sequencial)
-            $totalProductionDays += $item['production_days'] * $item['quantity'];
+            // Se pedir 2 unidades de 5 dias, são 10 dias de produção
+            $totalProductionDays += ($item['production_days'] * $item['quantity']);
         }
 
-        return view('site.cart', compact('cart', 'totalPrice', 'totalProductionDays'));
+        // 2. Se tiver CEP na URL (do formulário de cálculo), calcula o frete
+        $shippingOptions = [];
+        $zipcode = $request->query('zipcode');
+        
+        if ($zipcode) {
+            $shippingService = new ShippingService();
+            $shippingOptions = $shippingService->calculate($zipcode, $cart);
+        }
+
+        return view('site.cart', compact('cart', 'totalProductionDays', 'shippingOptions', 'zipcode'));
     }
 
-    /**
-     * Adicionar produto ao carrinho
-     */
-    public function add($id)
+    public function addToCart(Request $request)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::findOrFail($request->product_id);
         $cart = session()->get('cart', []);
 
-        // Se o produto já está no carrinho, aumenta a quantidade
-        if(isset($cart[$id])) {
-            $cart[$id]['quantity']++;
+        if(isset($cart[$product->id])) {
+            $cart[$product->id]['quantity']++;
         } else {
-            // Se não, adiciona novo item
-            $cart[$id] = [
+            $cart[$product->id] = [
                 "name" => $product->name,
                 "quantity" => 1,
                 "price" => $product->price,
                 "image" => $product->image_path,
-                "production_days" => $product->production_days
+                "production_days" => $product->production_days, // Importante para o cálculo
+                "weight" => $product->weight
             ];
         }
 
         session()->put('cart', $cart);
-        
-        // Retorna com notificação
-        return redirect()->back()->with('success', 'Produto adicionado ao carrinho com sucesso!');
+        return redirect()->back()->with('success', 'Produto adicionado ao carrinho!');
     }
 
-    /**
-     * Remover produto do carrinho
-     */
-    public function remove(Request $request)
+    // NOVA FUNÇÃO: Atualizar Quantidade
+    public function updateCart(Request $request)
+    {
+        if($request->id && $request->quantity){
+            $cart = session()->get('cart');
+            $cart[$request->id]['quantity'] = $request->quantity;
+            session()->put('cart', $cart);
+            session()->flash('success', 'Carrinho atualizado!');
+        }
+        // Retorna para o carrinho mantendo o CEP se tiver
+        return redirect()->route('cart.index', ['zipcode' => $request->zipcode]); 
+    }
+
+    public function removeFromCart(Request $request)
     {
         if($request->id) {
             $cart = session()->get('cart');
@@ -66,10 +74,14 @@ class CartController extends Controller
                 unset($cart[$request->id]);
                 session()->put('cart', $cart);
             }
-            session()->flash('success', 'Produto removido com sucesso!');
+            session()->flash('success', 'Produto removido!');
         }
-
-        // CORREÇÃO: Redireciona de volta para o carrinho após excluir
         return redirect()->back();
+    }
+    
+    // Redireciona o form de frete para o index com os parâmetros
+    public function calculateShipping(Request $request)
+    {
+        return redirect()->route('cart.index', ['zipcode' => $request->zipcode]);
     }
 }
