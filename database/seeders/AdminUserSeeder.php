@@ -15,10 +15,10 @@ class AdminUserSeeder extends Seeder
     {
         // Cria o usuário se ele não existir (baseado no email)
         User::updateOrCreate(
-            ['email' => 'vovolu@teste.com'], // Email de login
+            ['email' => 'contato@vovolucroche.com.br'], // Email de login
             [
                 'name' => 'Vovó Lu',
-                'password' => Hash::make('12345678'), // Senha padrão
+                'password' => Hash::make('Lf@871277'), // Senha padrão
                 'email_verified_at' => now(),
             ]
         );
