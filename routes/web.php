@@ -35,6 +35,8 @@ Route::match(['get', 'post'], '/carrinho/adicionar/{id?}', [CartController::clas
 Route::delete('/carrinho/remover', [CartController::class, 'removeFromCart'])->name('cart.remove');
 Route::patch('/carrinho/atualizar', [CartController::class, 'updateCart'])->name('cart.update');
 Route::get('/carrinho/frete', [CartController::class, 'calculateShipping'])->name('cart.shipping');
+// Rota para SALVAR a escolha do frete
+Route::post('/carrinho/frete/selecionar', [CartController::class, 'saveShipping'])->name('cart.shipping.save');
 
 // --- ROTAS DE CHECKOUT (FINALIZAÇÃO) ---
 Route::get('/finalizar-compra', [CheckoutController::class, 'index'])->name('checkout.index');

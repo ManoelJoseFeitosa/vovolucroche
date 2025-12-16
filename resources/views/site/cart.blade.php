@@ -89,31 +89,63 @@
                             </form>
 
                             @if(!empty($shippingOptions))
-                                <div class="bg-gray-50 p-3 rounded mb-4 text-sm">
-                                    <p class="font-bold text-gray-700 mb-2">Opções para {{ $zipcode }}:</p>
-                                    @foreach($shippingOptions as $option)
-                                        <div class="flex justify-between items-center mb-2 border-b last:border-0 pb-1">
-                                            <div>
-                                                <span class="block font-medium">{{ $option['name'] }}</span>
-                                                <span class="text-xs text-gray-500">
-                                                    Chega em aprox. <strong class="text-teal-600">{{ $totalProductionDays + $option['days'] }} dias</strong>
-                                                    <br>(Produção + Entrega)
+                                <form action="{{ route('cart.shipping.save') }}" method="POST" id="shipping-form">
+                                    @csrf
+                                    <input type="hidden" name="zipcode_hidden" value="{{ $zipcode }}"> 
+
+                                    <div class="bg-gray-50 p-3 rounded mb-4 text-sm border border-gray-200">
+                                        <p class="font-bold text-gray-700 mb-2">Escolha o envio para {{ $zipcode }}:</p>
+                                        
+                                        @foreach($shippingOptions as $option)
+                                            <label class="flex justify-between items-center mb-2 cursor-pointer hover:bg-gray-100 p-2 rounded transition">
+                                                <div class="flex items-center">
+                                                    <input type="radio" name="shipping_option" 
+                                                           value="{{ $option['name'] }}|{{ $option['price'] }}"
+                                                           class="mr-2 text-teal-600 focus:ring-teal-500"
+                                                           onchange="this.form.submit()"
+                                                           {{ (session('selected_shipping.name') == $option['name']) ? 'checked' : '' }}>
+                                                    
+                                                    <div>
+                                                        <span class="block font-medium text-gray-800">{{ $option['name'] }}</span>
+                                                        <span class="text-xs text-gray-500">
+                                                            Chega em aprox. <strong class="text-teal-600">{{ $totalProductionDays + $option['days'] }} dias</strong>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <span class="font-bold text-gray-800">
+                                                    {{ $option['price'] > 0 ? 'R$ '.number_format($option['price'], 2, ',', '.') : 'Grátis' }}
                                                 </span>
-                                            </div>
-                                            <span class="font-bold text-gray-800">
-                                                {{ $option['price'] > 0 ? 'R$ '.number_format($option['price'], 2, ',', '.') : 'Grátis' }}
-                                            </span>
-                                        </div>
-                                    @endforeach
-                                </div>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                </form>
                             @endif
 
-                            <div class="border-t pt-4 flex justify-between items-center mb-6">
-                                <span class="text-xl font-bold text-gray-800">Total (s/ frete)</span>
-                                <span class="text-xl font-bold text-teal-600">R$ {{ number_format($subtotal, 2, ',', '.') }}</span>
+                            <div class="border-t pt-4 space-y-2 mb-6">
+                                @if(session('selected_shipping'))
+                                    <div class="flex justify-between text-teal-600">
+                                        <span>Frete ({{ session('selected_shipping.name') }})</span>
+                                        <span>R$ {{ number_format(session('selected_shipping.price'), 2, ',', '.') }}</span>
+                                    </div>
+                                    
+                                    <div class="flex justify-between items-center pt-2 border-t">
+                                        <span class="text-xl font-bold text-gray-800">Total Final</span>
+                                        <span class="text-xl font-bold text-teal-600">
+                                            R$ {{ number_format($subtotal + session('selected_shipping.price'), 2, ',', '.') }}
+                                        </span>
+                                    </div>
+                                @else
+                                    <div class="flex justify-between items-center pt-2 border-t">
+                                        <span class="text-xl font-bold text-gray-800">Total (s/ frete)</span>
+                                        <span class="text-xl font-bold text-teal-600">R$ {{ number_format($subtotal, 2, ',', '.') }}</span>
+                                    </div>
+                                    <p class="text-xs text-red-500 text-right">Selecione um frete acima para finalizar.</p>
+                                @endif
                             </div>
 
-                            <a href="{{ route('checkout.index') }}" class="block w-full bg-teal-500 text-white text-center font-bold py-3 rounded hover:bg-teal-600 transition shadow">
+                            <a href="{{ route('checkout.index') }}" 
+                               class="block w-full text-center font-bold py-3 rounded transition shadow 
+                               {{ session('selected_shipping') ? 'bg-teal-500 text-white hover:bg-teal-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed pointer-events-none' }}">
                                 Finalizar Compra
                             </a>
                         </div>

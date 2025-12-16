@@ -8,18 +8,17 @@ use App\Services\ShippingService;
 
 class CartController extends Controller
 {
-    public function index(Request $request)
+   public function index(Request $request)
     {
         $cart = session()->get('cart', []);
         
-        // 1. Calcula o Total de Dias de Confecção (Soma de todos os itens)
+        // 1. Calcula Dias de Confecção
         $totalProductionDays = 0;
         foreach($cart as $item) {
-            // Se pedir 2 unidades de 5 dias, são 10 dias de produção
             $totalProductionDays += ($item['production_days'] * $item['quantity']);
         }
 
-        // 2. Se tiver CEP na URL (do formulário de cálculo), calcula o frete
+        // 2. Calcula Frete (se tiver CEP na URL)
         $shippingOptions = [];
         $zipcode = $request->query('zipcode');
         
@@ -28,7 +27,15 @@ class CartController extends Controller
             $shippingOptions = $shippingService->calculate($zipcode, $cart);
         }
 
-        return view('site.cart', compact('cart', 'totalProductionDays', 'shippingOptions', 'zipcode'));
+        // 3. Verifica se já tem frete salvo na sessão
+        $selectedShipping = session()->get('selected_shipping', null);
+        
+        // Se o usuário mudou o CEP, limpamos o frete selecionado antigo para evitar erros
+        if ($zipcode && $selectedShipping && strpos(url()->previous(), 'zipcode') === false) {
+             // Lógica opcional: se quiser forçar re-seleção quando muda CEP
+        }
+
+        return view('site.cart', compact('cart', 'totalProductionDays', 'shippingOptions', 'zipcode', 'selectedShipping'));
     }
 
     public function addToCart(Request $request, $id = null)
@@ -90,5 +97,22 @@ class CartController extends Controller
     public function calculateShipping(Request $request)
     {
         return redirect()->route('cart.index', ['zipcode' => $request->zipcode]);
+    }
+
+    public function saveShipping(Request $request)
+    {
+        // O valor vem no formato "Nome do Frete|Preço" (ex: "PAC|35.90")
+        if ($request->shipping_option) {
+            [$name, $price] = explode('|', $request->shipping_option);
+            
+            session()->put('selected_shipping', [
+                'name' => $name,
+                'price' => (float) $price
+            ]);
+            
+            return redirect()->back()->with('success', 'Frete selecionado!');
+        }
+        
+        return redirect()->back();
     }
 }
