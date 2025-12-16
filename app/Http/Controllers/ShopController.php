@@ -4,62 +4,72 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\ContactMail;
+use Illuminate\Support\Facades\Mail; // Importante para o e-mail funcionar
+use App\Mail\ContactMail; // Importante para usar a classe que criamos
 
 class ShopController extends Controller
 {
     /**
-     * Página Inicial (Home) - História e Destaques
+     * Página Inicial (Home)
      */
     public function index()
     {
-        // ALTERAÇÃO: Busca apenas produtos marcados como 'is_featured'
-        // Ordenado pelos mais recentes primeiro. Pegamos até 6 para ficar um grid bonito.
-        $featuredProducts = Product::where('is_active', true)
-                                   ->where('is_featured', true)
-                                   ->latest()
-                                   ->take(6)
-                                   ->get();
-        
-        return view('site.home', compact('featuredProducts'));
+        // Pega os 4 últimos produtos para exibir na capa (se houver essa seção)
+        $products = Product::latest()->take(4)->get();
+        return view('site.home', compact('products'));
     }
 
     /**
-     * Página da Loja (Catálogo Completo)
+     * Catálogo Completo (Loja)
      */
     public function catalog()
     {
-        // Busca todos os produtos ativos, ordenados pelos mais novos
-        $products = Product::where('is_active', true)->latest()->get();
-        
+        // Exibe 12 produtos por página
+        $products = Product::paginate(12);
         return view('site.shop', compact('products'));
     }
 
     /**
-     * Página de Detalhes do Produto (Opcional, mas boa prática)
+     * Detalhes do Produto
      */
     public function show($id)
     {
         $product = Product::findOrFail($id);
-        return view('site.product', compact('product'));
+        
+        // Pega 4 produtos relacionados (aleatórios) para exibir embaixo
+        $related = Product::where('id', '!=', $id)->inRandomOrder()->take(4)->get();
+
+        return view('site.product', compact('product', 'related'));
     }
 
     /**
-     * Página de Contato
+     * Página de Contato (NOVA - Resolve o seu Erro 500)
+     */
+    public function contact()
+    {
+        return view('site.contact');
+    }
+
+    /**
+     * Envia o E-mail de Contato (NOVA)
      */
     public function sendContact(Request $request)
     {
+        // 1. Valida os dados do formulário
         $data = $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'email' => 'required|email',
-            'subject' => 'required',
-            'message' => 'required'
+            'subject' => 'required|string',
+            'message' => 'required|string'
         ]);
 
-        // Envia para o email da loja
-        Mail::to('contato@vovolucroche.com.br')->send(new ContactMail($data));
-
-        return redirect()->back()->with('success', 'Mensagem enviada com sucesso! Em breve retornaremos.');
+        // 2. Envia o e-mail usando a classe ContactMail
+        // Certifique-se de que o MAIL_USERNAME no .env está correto
+        try {
+            Mail::to('contato@vovolucroche.com.br')->send(new ContactMail($data));
+            return redirect()->back()->with('success', 'Mensagem enviada com sucesso! Em breve retornaremos.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao enviar mensagem. Tente novamente mais tarde.');
+        }
     }
 }
