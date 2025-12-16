@@ -92,11 +92,13 @@ class CheckoutController extends Controller
             ]);
         }
 
+        // Limpa a sessão do carrinho
         session()->forget(['cart', 'customer_address']);
 
-        // 3. Integração com Mercado Pago (DEBUG ATIVADO)
+        // 3. Integração com Mercado Pago
         try {
-            MercadoPagoConfig::setAccessToken(env('MERCADOPAGO_ACCESS_TOKEN'));
+            // Configura o Token (usando config ou env conforme sua preferência)
+            MercadoPagoConfig::setAccessToken(config('services.mercadopago.access_token', env('MERCADOPAGO_ACCESS_TOKEN')));
 
             $client = new PreferenceClient();
             
@@ -105,7 +107,9 @@ class CheckoutController extends Controller
                     [
                         "id" => "ORDER-" . $order->id,
                         "title" => "Pedido #" . $order->id . " - Vovó Lu Crochê",
+                        "description" => "Compra realizada no site Vovó Lu Crochê",
                         "quantity" => 1,
+                        "currency_id" => "BRL",
                         "unit_price" => (float) $finalTotal
                     ]
                 ],
@@ -113,9 +117,18 @@ class CheckoutController extends Controller
                     "name" => $address['fullname'],
                     "email" => $address['email'],
                 ],
+                // === AQUI ESTÃO AS REGRAS DE PAGAMENTO ===
+                "payment_methods" => [
+                    "excluded_payment_types" => [
+                        ["id" => "ticket"], // Remove Boleto
+                        ["id" => "atm"]     // Remove Lotérica/Caixa Eletrônico
+                    ],
+                    "installments" => 4 // Limita parcelamento em até 4x
+                ],
+                // =========================================
                 "back_urls" => [
                     "success" => route('checkout.success'),
-                    "failure" => route('checkout.payment'),
+                    "failure" => route('checkout.payment'), // Se falhar, volta para tela de pagamento
                     "pending" => route('checkout.success')
                 ],
                 "auto_return" => "approved",
@@ -125,7 +138,6 @@ class CheckoutController extends Controller
             return redirect($preference->init_point);
 
         } catch (MPApiException $e) {
-            // AQUI ESTÁ A MUDANÇA: Vamos ver o erro real do Mercado Pago
             $response = $e->getApiResponse();
             $content = $response ? $response->getContent() : 'Sem detalhes';
             
@@ -137,7 +149,6 @@ class CheckoutController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            // Erro genérico de código (ex: classe não encontrada)
             dd($e->getMessage(), $e->getTraceAsString());
         }
     }
