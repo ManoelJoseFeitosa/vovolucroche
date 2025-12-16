@@ -110,7 +110,8 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">Código de Rastreio (Opcional)</label>
                             <input type="text" name="tracking_code" placeholder="Ex: AA123456789BR" class="w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500">
                         </div>
-                        <button type="submit" class="bg-blue-600 text-white px-6 py-2.5 rounded hover:bg-blue-700 transition font-bold shadow">
+                        
+                        <button type="submit" class="bg-teal-500 text-white px-6 py-2.5 rounded hover:bg-teal-600 transition font-bold shadow w-full md:w-auto">
                             Marcar como Enviado & Avisar Cliente
                         </button>
                     </form>
