@@ -25,6 +25,19 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            
+            @if(session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 <div class="bg-white shadow rounded-lg p-6 h-fit border-l-4 border-teal-500">
@@ -83,17 +96,31 @@
                 </div>
             </div>
 
+            <div class="mt-8 bg-gray-50 p-6 rounded-lg border border-gray-200">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Gerenciar Envio</h3>
+                
+                @if($order->status == 'shipped')
+                    <div class="text-green-600 font-bold bg-green-100 p-3 rounded">
+                        ✓ Este pedido já foi marcado como enviado!
+                    </div>
+                @else
+                    <form action="{{ route('admin.orders.ship', $order->id) }}" method="POST" class="flex flex-col md:flex-row gap-4 items-end">
+                        @csrf
+                        <div class="w-full md:w-1/2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Código de Rastreio (Opcional)</label>
+                            <input type="text" name="tracking_code" placeholder="Ex: AA123456789BR" class="w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500">
+                        </div>
+                        <button type="submit" class="bg-blue-600 text-white px-6 py-2.5 rounded hover:bg-blue-700 transition font-bold shadow">
+                            Marcar como Enviado & Avisar Cliente
+                        </button>
+                    </form>
+                @endif
+            </div>
+
             <div class="mt-6 flex justify-between items-center">
                 <a href="{{ route('admin.orders.index') }}" class="text-gray-600 hover:text-teal-600 hover:underline flex items-center gap-1 transition">
                     &larr; Voltar para Lista
                 </a>
-                
-                {{-- Botão futuro para mudar status (Deixei comentado para a próxima fase) --}}
-                {{-- 
-                <button class="bg-teal-500 text-white px-4 py-2 rounded shadow hover:bg-teal-600">
-                    Marcar como Pago
-                </button> 
-                --}}
             </div>
         </div>
     </div>

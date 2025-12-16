@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ContactMail;
 
 class ShopController extends Controller
 {
@@ -46,8 +48,18 @@ class ShopController extends Controller
     /**
      * Página de Contato
      */
-    public function contact()
+    public function sendContact(Request $request)
     {
-        return view('site.contact');
+        $data = $request->validate([
+            'name' => 'required',
+            'email' => 'required|email',
+            'subject' => 'required',
+            'message' => 'required'
+        ]);
+
+        // Envia para o email da loja
+        Mail::to('contato@vovolucroche.com.br')->send(new ContactMail($data));
+
+        return redirect()->back()->with('success', 'Mensagem enviada com sucesso! Em breve retornaremos.');
     }
 }

@@ -51,8 +51,15 @@
             <div class="bg-gray-50 p-8 rounded-xl shadow-lg border border-gray-100">
                 <h3 class="text-xl font-bold text-gray-800 mb-6">Envie uma mensagem</h3>
                 
-                <form action="#" method="POST" class="space-y-4">
-                    @csrf <div>
+                @if(session('success'))
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                <form action="{{ route('contact.send') }}" method="POST" class="space-y-4">
+                    @csrf 
+                    <div>
                         <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Seu Nome</label>
                         <input type="text" id="name" name="name" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring focus:ring-teal-500 focus:ring-opacity-50" placeholder="Como podemos te chamar?" required>
                     </div>

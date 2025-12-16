@@ -23,19 +23,16 @@ Route::get('/loja', [ShopController::class, 'catalog'])->name('shop');
 // Detalhes do Produto
 Route::get('/produto/{id}', [ShopController::class, 'show'])->name('shop.product');
 
-// Página de Contato
+// Página de Contato e Envio
 Route::get('/contato', [ShopController::class, 'contact'])->name('contact');
+Route::post('/contato/enviar', [ShopController::class, 'sendContact'])->name('contact.send');
 
 // --- ROTAS DO CARRINHO DE COMPRAS ---
 Route::get('/carrinho', [CartController::class, 'index'])->name('cart.index');
-
-// CORREÇÃO PRINCIPAL AQUI: Aceita GET e POST, e aponta para 'addToCart'
 Route::match(['get', 'post'], '/carrinho/adicionar/{id?}', [CartController::class, 'addToCart'])->name('cart.add');
-
 Route::delete('/carrinho/remover', [CartController::class, 'removeFromCart'])->name('cart.remove');
 Route::patch('/carrinho/atualizar', [CartController::class, 'updateCart'])->name('cart.update');
 Route::get('/carrinho/frete', [CartController::class, 'calculateShipping'])->name('cart.shipping');
-// Rota para SALVAR a escolha do frete
 Route::post('/carrinho/frete/selecionar', [CartController::class, 'saveShipping'])->name('cart.shipping.save');
 
 // --- ROTAS DE CHECKOUT (FINALIZAÇÃO) ---
@@ -64,6 +61,9 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     // Gerenciamento de Pedidos
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{id}', [AdminOrderController::class, 'show'])->name('orders.show');
+    
+    // Rota para Marcar como Enviado (NOVA)
+    Route::post('/orders/{id}/ship', [AdminOrderController::class, 'markAsShipped'])->name('orders.ship');
 });
 
 // Rotas de Perfil (Breeze)
