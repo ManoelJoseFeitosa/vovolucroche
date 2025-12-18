@@ -1,1 +1,1 @@
-<img src="{{ asset('images/logovovolu.jpeg') }}" alt="Vovó Lu Crochê" {{ $attributes->merge(['class' => 'h-24 w-auto rounded-full shadow-md border-2 border-teal-50']) }}>
+<img src="{{ asset('images/logovovolu.jpeg') }}" alt="Vovó Lu Crochê" {{ $attributes->merge(['class' => 'h-52 w-auto rounded-full shadow-md border-2 border-teal-50']) }}>
