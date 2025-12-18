@@ -27,24 +27,25 @@
             </label>
         </div>
 
-        <div class="flex items-center justify-between mt-4">
-            @if (Route::has('register'))
-                <a class="underline text-sm text-gray-600 hover:text-teal-600 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500" href="{{ route('register') }}">
-                    Não tem conta? Cadastre-se
-                </a>
-            @endif
-
-            <div class="flex items-center gap-4">
-                @if (Route::has('password.request'))
-                    <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500" href="{{ route('password.request') }}">
-                        Esqueceu sua senha?
+        <div class="mt-6">
+            
+            <div class="flex flex-col space-y-3 mb-6">
+                @if (Route::has('register'))
+                    <a class="underline text-sm text-gray-600 hover:text-teal-600 font-medium" href="{{ route('register') }}">
+                        Não tem conta? Cadastre-se
                     </a>
                 @endif
 
-                <x-primary-button class="ms-3 bg-teal-600 hover:bg-teal-700">
-                    Entrar
-                </x-primary-button>
+                @if (Route::has('password.request'))
+                    <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('password.request') }}">
+                        Esqueceu sua senha?
+                    </a>
+                @endif
             </div>
+
+            <x-primary-button class="w-full justify-center py-3 bg-teal-600 hover:bg-teal-700 text-base shadow-md transition transform hover:scale-[1.02]">
+                Entrar
+            </x-primary-button>
         </div>
     </form>
 </x-guest-layout>
