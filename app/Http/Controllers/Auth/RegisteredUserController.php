@@ -29,23 +29,42 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // 1. Validação Completa (incluindo endereço)
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'cpf' => ['required', 'string'],
+            'phone' => ['required', 'string'],
+            'zipcode' => ['required', 'string'],
+            'street' => ['required', 'string'],
+            'number' => ['required', 'string'],
+            'district' => ['required', 'string'],
+            'city' => ['required', 'string'],
+            'state' => ['required', 'string'],
         ]);
 
+        // 2. Criar Usuário com todos os dados
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'is_admin' => false, // GARANTE QUE É CLIENTE COMUM
+            'cpf' => $request->cpf,
+            'phone' => $request->phone,
+            'zipcode' => $request->zipcode,
+            'street' => $request->street,
+            'number' => $request->number,
+            'district' => $request->district,
+            'city' => $request->city,
+            'state' => $request->state,
+            'is_admin' => false, // Garante que é cliente
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // 3. MUDANÇA AQUI: Redireciona para a Loja (Shop) ao invés do Dashboard
+        return redirect()->route('shop');
     }
 }
