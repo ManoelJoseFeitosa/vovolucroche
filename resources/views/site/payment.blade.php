@@ -43,7 +43,8 @@
                             @foreach($shippingOptions as $index => $option)
                                 <label class="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-teal-50 hover:border-teal-300 transition">
                                     <div class="flex items-center">
-                                        <input type="radio" name="shipping_option" value="{{ $option['code'] }}|{{ $option['price'] }}" 
+                                        {{-- CORREÇÃO APLICADA NA LINHA ABAIXO --}}
+                                        <input type="radio" name="shipping_option" value="{{ $option['code'] ?? $option['id'] ?? $option['name'] }}|{{ $option['price'] }}" 
                                                class="h-5 w-5 text-teal-600 focus:ring-teal-500 border-gray-300" 
                                                onclick="updateTotal('{{ $subtotal }}', '{{ $option['price'] }}')"
                                                required {{ $index == 0 ? 'checked' : '' }}>
