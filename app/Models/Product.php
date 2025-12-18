@@ -33,4 +33,8 @@ class Product extends Model
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
     ];
+
+    public function reviews() {
+        return $this->hasMany(Review::class);
+    }
 }

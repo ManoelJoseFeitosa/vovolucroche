@@ -14,8 +14,32 @@ class CheckoutController extends Controller
 {
     public function index()
     {
-        if(!session('cart') || count(session('cart')) == 0) return redirect()->route('shop');
-        return view('site.checkout');
+    if(!session('cart') || count(session('cart')) == 0) return redirect()->route('shop');
+
+    // MUDANÇA: Se não estiver logado, manda para identificação
+    if (!auth()->check()) {
+        return redirect()->route('checkout.auth');
+    }
+
+    // Se já estiver logado, carrega os dados do usuário na sessão se não tiver
+    if (!session('customer_address')) {
+        $user = auth()->user();
+        session()->put('customer_address', [
+            'fullname' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'zipcode' => $user->zipcode,
+            'street' => $user->street,
+            'number' => $user->number,
+            'district' => $user->district,
+            'city' => $user->city,
+            'state' => $user->state,
+            'cpf' => $user->cpf
+        ]);
+        return redirect()->route('checkout.payment');
+    }
+
+    return view('site.checkout'); // ou redireciona direto pro pagamento dependendo do seu fluxo
     }
 
     public function store(Request $request)
