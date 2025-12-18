@@ -28,8 +28,13 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // ALTERAÇÃO AQUI: Redireciona para a lista de produtos (Admin) em vez do dashboard padrão
-        return redirect()->intended(route('admin.products.index', absolute: false));
+        // CORREÇÃO: Verifica se é admin antes de redirecionar
+        if ($request->user()->is_admin) {
+            return redirect()->route('admin.products.index');
+        }
+
+        // Se for cliente comum, vai para a loja
+        return redirect()->route('shop');
     }
 
     /**

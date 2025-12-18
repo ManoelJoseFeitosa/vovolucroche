@@ -6,9 +6,10 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
-// NOVOS CONTROLLERS ADICIONADOS
 use App\Http\Controllers\CheckoutAuthController;
 use App\Http\Controllers\CustomerAreaController;
+// IMPORTANTE: Importando o Middleware de Admin que criamos
+use App\Http\Middleware\AdminMiddleware; 
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -78,7 +79,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Rotas Administrativas (Protegidas)
+| Rotas Administrativas (Protegidas por AdminMiddleware)
 |--------------------------------------------------------------------------
 */
 
@@ -86,8 +87,8 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Grupo de Rotas do Administrador
-Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+// ALTERAÇÃO AQUI: Adicionado AdminMiddleware::class para proteger o grupo
+Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
     
     // Gerenciamento de Produtos
     Route::resource('products', ProductController::class);
