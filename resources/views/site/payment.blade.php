@@ -43,7 +43,7 @@
                             @foreach($shippingOptions as $index => $option)
                                 <label class="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-teal-50 hover:border-teal-300 transition">
                                     <div class="flex items-center">
-                                        {{-- CORREÇÃO APLICADA NA LINHA ABAIXO --}}
+                                        {{-- Mantivemos a correção do código/id/nome aqui --}}
                                         <input type="radio" name="shipping_option" value="{{ $option['code'] ?? $option['id'] ?? $option['name'] }}|{{ $option['price'] }}" 
                                                class="h-5 w-5 text-teal-600 focus:ring-teal-500 border-gray-300" 
                                                onclick="updateTotal('{{ $subtotal }}', '{{ $option['price'] }}')"
@@ -70,6 +70,12 @@
                         <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-lg shadow-lg transition transform hover:scale-105">
                             FINALIZAR PEDIDO
                         </button>
+
+                        {{-- BOTÃO DE CANCELAR ADICIONADO ABAIXO --}}
+                        <a href="{{ route('cart.index') }}" class="block w-full text-center mt-3 bg-red-50 border border-red-100 hover:bg-red-100 text-red-600 font-bold py-4 rounded-lg transition">
+                            CANCELAR COMPRA
+                        </a>
+
                     </form>
                 </div>
             </div>
