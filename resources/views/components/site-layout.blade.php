@@ -25,6 +25,12 @@
                     <a href="{{ route('home') }}" class="text-gray-600 hover:text-teal-500 px-3 py-2 font-medium text-lg transition">A História</a>
                     <a href="{{ route('shop') }}" class="text-gray-600 hover:text-teal-500 px-3 py-2 font-medium text-lg transition">Loja</a>
                     <a href="{{ route('contact') }}" class="text-gray-600 hover:text-teal-500 px-3 py-2 font-medium text-lg transition">Contato</a>
+                    
+                    @auth
+                        <a href="{{ route('customer.dashboard') }}" class="text-teal-600 font-bold hover:text-teal-800 px-3 py-2 text-lg transition flex items-center gap-1">
+                            Meus Pedidos
+                        </a>
+                    @endauth
                 </nav>
 
                 <div class="flex items-center space-x-4 md:space-x-6">
