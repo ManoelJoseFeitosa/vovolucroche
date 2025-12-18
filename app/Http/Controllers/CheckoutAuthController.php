@@ -41,6 +41,7 @@ class CheckoutAuthController extends Controller
             'district' => $request->district,
             'city' => $request->city,
             'state' => $request->state,
+            'is_admin' => false, // GARANTE QUE É CLIENTE COMUM
         ]);
 
         // Loga o usuário
