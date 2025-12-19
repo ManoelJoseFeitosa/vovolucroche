@@ -33,18 +33,16 @@
                     {{-- Imagem e Badges --}}
                     <div class="h-64 overflow-hidden bg-gray-50 relative group">
                         
-                        {{-- 1. A IMAGEM VEM PRIMEIRO (Para ficar no fundo) --}}
+                        {{-- 1. IMAGEM PRIMEIRO (Fica atrás) --}}
                         @if($product->image_path)
-                            <img src="{{ asset('storage/' . $product->image_path) }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 z-0">
+                            <img src="{{ asset('storage/' . $product->image_path) }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 relative z-0">
                         @else
                             <div class="flex items-center justify-center h-full text-gray-400 bg-gray-200">
                                 <span class="text-sm">Imagem indisponível</span>
                             </div>
                         @endif
-
-                        {{-- 2. ELEMENTOS FLUTUANTES VÊM DEPOIS DA IMAGEM (Para ficarem por cima) --}}
-
-                        {{-- BOTÃO DE FAVORITAR --}}
+                        
+                        {{-- 2. BOTÃO DE FAVORITAR (Vem depois, z-index 30) --}}
                         <div class="absolute top-2 right-2 z-30">
                             @auth
                                 <form action="{{ route('favorites.toggle', $product->id) }}" method="POST">
@@ -72,7 +70,7 @@
                             @endauth
                         </div>
 
-                        {{-- ETIQUETA DE DIAS --}}
+                        {{-- 3. ETIQUETA DE DIAS (Vem depois, z-index 30) --}}
                         <div class="absolute top-2 left-2 bg-white/90 backdrop-blur text-xs font-bold text-teal-700 px-3 py-1 rounded-full shadow-sm z-30">
                             ⏱ {{ $product->production_days }} dias para produzir
                         </div>

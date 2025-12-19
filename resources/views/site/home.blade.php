@@ -65,19 +65,18 @@
                     {{-- ÁREA DA IMAGEM --}}
                     <div class="h-72 overflow-hidden bg-gray-100 flex items-center justify-center relative">
                          
-                        {{-- 1. A IMAGEM VEM PRIMEIRO (Fica no fundo) --}}
-                        @if($product->image_path)
-                            <img src="{{ asset('storage/' . $product->image_path) }}" class="w-full h-full object-cover transition duration-700 group-hover:scale-110 z-0">
-                        @else
+                         {{-- 1. IMAGEM (Agora vem primeiro no código para ficar atrás) --}}
+                         @if($product->image_path)
+                            <img src="{{ asset('storage/' . $product->image_path) }}" class="w-full h-full object-cover transition duration-700 group-hover:scale-110 relative z-0">
+                         @else
                             <div class="text-gray-400 flex flex-col items-center">
                                 <span class="text-4xl mb-2">🧶</span>
                                 <span>Sem Imagem</span>
                             </div>
-                        @endif
+                         @endif
 
-                        {{-- 2. O BOTÃO VEM DEPOIS (Fica por cima) --}}
-                        {{-- POSICIONADO NO CANTO SUPERIOR DIREITO --}}
-                        <div class="absolute top-3 right-3 z-30">
+                         {{-- 2. BOTÃO DE FAVORITAR (Agora vem depois no código para ficar na frente - z-30) --}}
+                         <div class="absolute top-3 right-3 z-30">
                             @auth
                                 <form action="{{ route('favorites.toggle', $product->id) }}" method="POST">
                                     @csrf
@@ -103,7 +102,6 @@
                                 </a>
                             @endauth
                         </div>
-
                     </div>
 
                     <div class="p-8 text-center flex-grow flex flex-col justify-between">
