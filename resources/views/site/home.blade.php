@@ -65,8 +65,8 @@
                     {{-- ÁREA DA IMAGEM --}}
                     <div class="h-72 overflow-hidden bg-gray-100 flex items-center justify-center relative">
                          
-                         {{-- BOTÃO DE FAVORITAR (Posicionado no canto superior direito) --}}
-                         <div class="absolute top-3 right-3 z-10">
+                         {{-- BOTÃO DE FAVORITAR (Posicionado no canto superior direito - Z-INDEX 30) --}}
+                         <div class="absolute top-3 right-3 z-30">
                             @auth
                                 <form action="{{ route('favorites.toggle', $product->id) }}" method="POST">
                                     @csrf
@@ -94,14 +94,14 @@
                             @endauth
                         </div>
 
-                         @if($product->image_path)
-                            <img src="{{ asset('storage/' . $product->image_path) }}" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
-                         @else
+                        @if($product->image_path)
+                            <img src="{{ asset('storage/' . $product->image_path) }}" class="w-full h-full object-cover transition duration-700 group-hover:scale-110 z-0">
+                        @else
                             <div class="text-gray-400 flex flex-col items-center">
                                 <span class="text-4xl mb-2">🧶</span>
                                 <span>Sem Imagem</span>
                             </div>
-                         @endif
+                        @endif
                     </div>
 
                     <div class="p-8 text-center flex-grow flex flex-col justify-between">
