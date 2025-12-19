@@ -18,8 +18,8 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-    'name', 'email', 'password', 
-    'cpf', 'phone', 'zipcode', 'street', 'number', 'district', 'city', 'state'
+        'name', 'email', 'password', 
+        'cpf', 'phone', 'zipcode', 'street', 'number', 'district', 'city', 'state'
     ];
 
     /**
@@ -53,8 +53,27 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
+    // Mantive sua wishlist antiga caso ainda use, mas o sistema novo usa 'favorites' abaixo
     public function wishlist()
     {
-    return $this->belongsToMany(Product::class, 'product_user')->withTimestamps();
+        return $this->belongsToMany(Product::class, 'product_user')->withTimestamps();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Novo Sistema de Favoritos
+    |--------------------------------------------------------------------------
+    */
+
+    // Relação com a tabela 'favorites'
+    public function favorites()
+    {
+        return $this->belongsToMany(Product::class, 'favorites', 'user_id', 'product_id')->withTimestamps();
+    }
+
+    // Verifica se o usuário já favoritou um produto específico
+    public function hasFavorited($product)
+    {
+        return $this->favorites()->where('product_id', $product->id)->exists();
     }
 }

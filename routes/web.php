@@ -8,6 +8,8 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\CheckoutAuthController;
 use App\Http\Controllers\CustomerAreaController;
+// IMPORTANTE: Importando o Controller de Favoritos que criamos
+use App\Http\Controllers\FavoriteController;
 // IMPORTANTE: Importando o Middleware de Admin que criamos
 use App\Http\Middleware\AdminMiddleware; 
 use Illuminate\Support\Facades\Route;
@@ -87,7 +89,6 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// ALTERAÇÃO AQUI: Adicionado AdminMiddleware::class para proteger o grupo
 Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
     
     // Gerenciamento de Produtos
@@ -112,7 +113,16 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+/*
+|--------------------------------------------------------------------------
+| Rotas de Favoritos (Correção do Erro)
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth'])->group(function () {
+    // Esta é a rota que conserta o erro "Route [favorites.toggle] not defined"
+    Route::post('/favorites/{product}', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
+
+    // Se você estiver usando wishlist antiga, mantive aqui, mas a do botão novo é a de cima
     Route::post('/wishlist/toggle/{product}', [App\Http\Controllers\WishlistController::class, 'toggle'])->name('wishlist.toggle');
     Route::get('/wishlist', [App\Http\Controllers\WishlistController::class, 'index'])->name('wishlist.index');
 });
