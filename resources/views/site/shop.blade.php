@@ -33,7 +33,18 @@
                     {{-- Imagem e Badges --}}
                     <div class="h-64 overflow-hidden bg-gray-50 relative group">
                         
-                        {{-- BOTÃO DE FAVORITAR (Canto Superior Direito - Z-INDEX 30) --}}
+                        {{-- 1. A IMAGEM VEM PRIMEIRO (Para ficar no fundo) --}}
+                        @if($product->image_path)
+                            <img src="{{ asset('storage/' . $product->image_path) }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 z-0">
+                        @else
+                            <div class="flex items-center justify-center h-full text-gray-400 bg-gray-200">
+                                <span class="text-sm">Imagem indisponível</span>
+                            </div>
+                        @endif
+
+                        {{-- 2. ELEMENTOS FLUTUANTES VÊM DEPOIS DA IMAGEM (Para ficarem por cima) --}}
+
+                        {{-- BOTÃO DE FAVORITAR --}}
                         <div class="absolute top-2 right-2 z-30">
                             @auth
                                 <form action="{{ route('favorites.toggle', $product->id) }}" method="POST">
@@ -61,19 +72,11 @@
                             @endauth
                         </div>
 
-                        {{-- ETIQUETA DE DIAS (Canto Superior Esquerdo - Z-INDEX 30) --}}
+                        {{-- ETIQUETA DE DIAS --}}
                         <div class="absolute top-2 left-2 bg-white/90 backdrop-blur text-xs font-bold text-teal-700 px-3 py-1 rounded-full shadow-sm z-30">
                             ⏱ {{ $product->production_days }} dias para produzir
                         </div>
 
-                        {{-- Imagem do Produto --}}
-                        @if($product->image_path)
-                            <img src="{{ asset('storage/' . $product->image_path) }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 z-0">
-                        @else
-                            <div class="flex items-center justify-center h-full text-gray-400 bg-gray-200">
-                                <span class="text-sm">Imagem indisponível</span>
-                            </div>
-                        @endif
                     </div>
 
                     {{-- Conteúdo do Card --}}
