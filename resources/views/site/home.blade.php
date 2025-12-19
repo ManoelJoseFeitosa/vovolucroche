@@ -60,8 +60,40 @@
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
                 @foreach($featuredProducts as $product)
-                <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl transition duration-300 overflow-hidden group flex flex-col">
+                <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl transition duration-300 overflow-hidden group flex flex-col relative">
+                    
+                    {{-- ÁREA DA IMAGEM --}}
                     <div class="h-72 overflow-hidden bg-gray-100 flex items-center justify-center relative">
+                         
+                         {{-- BOTÃO DE FAVORITAR (Posicionado no canto superior direito) --}}
+                         <div class="absolute top-3 right-3 z-10">
+                            @auth
+                                <form action="{{ route('favorites.toggle', $product->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="bg-white p-2 rounded-full shadow hover:scale-110 transition duration-200 group/btn">
+                                        @if(Auth::user()->hasFavorited($product))
+                                            {{-- Coração Preenchido (Vermelho) --}}
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-red-500">
+                                                <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                                            </svg>
+                                        @else
+                                            {{-- Coração Vazado (Cinza/Outline) --}}
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-400 group-hover/btn:text-red-400">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                                            </svg>
+                                        @endif
+                                    </button>
+                                </form>
+                            @else
+                                {{-- Se não estiver logado, redireciona para login --}}
+                                <a href="{{ route('login') }}" class="bg-white p-2 rounded-full shadow hover:scale-110 transition duration-200 block">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-400">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                                    </svg>
+                                </a>
+                            @endauth
+                        </div>
+
                          @if($product->image_path)
                             <img src="{{ asset('storage/' . $product->image_path) }}" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
                          @else
@@ -71,6 +103,7 @@
                             </div>
                          @endif
                     </div>
+
                     <div class="p-8 text-center flex-grow flex flex-col justify-between">
                         <div>
                             <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $product->name }}</h3>
@@ -86,5 +119,4 @@
         </div>
     </div>
     @endif
-
 </x-site-layout>

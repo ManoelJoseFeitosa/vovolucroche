@@ -57,7 +57,7 @@ class ShippingService
             $response = Http::withHeaders([
                 'Accept' => 'application/json',
                 'Authorization' => 'Bearer ' . env('MELHORENVIO_TOKEN'),
-                'User-Agent' => 'Vovo Lu Croche (seuemail@gmail.com)' // Identificação obrigatória
+                'User-Agent' => 'Vovo Lu Croche (contato@vovolucroche.com.br)' // Identificação obrigatória
             ])->post(env('MELHORENVIO_URL'), [
                 "from" => [
                     "postal_code" => $fromZip

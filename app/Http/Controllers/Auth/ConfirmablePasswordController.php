@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use App\Models\Review;
 
 class ConfirmablePasswordController extends Controller
 {
@@ -36,5 +37,19 @@ class ConfirmablePasswordController extends Controller
         $request->session()->put('auth.password_confirmed_at', time());
 
         return redirect()->intended(route('dashboard', absolute: false));
+    }
+
+    public function index()
+    {
+    $products = \App\Models\Product::take(8)->get(); // Seus produtos atuais
+    
+    // Busca reviews com nota 4 ou 5, pega 3 aleatórios
+    $featuredReviews = Review::with('user') // Carrega quem fez o review
+                             ->where('rating', '>=', 4)
+                             ->inRandomOrder()
+                             ->take(3)
+                             ->get();
+
+    return view('home', compact('products', 'featuredReviews'));
     }
 }
